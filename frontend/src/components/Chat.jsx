@@ -13,7 +13,7 @@ const initialMessages = [
   { id: 4, user: 'Clove', text: 'Sockets and Supabase coming soon.', time: '10:03' },
 ]
 
-function Chat() {
+function Chat({ session }){
   const [messages, setMessages] = useState(initialMessages)
   const [input, setInput] = useState('')
   const socketRef = useRef(null)

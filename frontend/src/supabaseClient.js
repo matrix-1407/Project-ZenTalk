@@ -1,9 +1,15 @@
-// This file is a placeholder for Supabase client initialization.
-// Enable Vite env variables by creating a .env file from .env.example at the project root,
-// then restarting the dev server.
+// frontend/src/supabaseClient.js
+import { createClient } from '@supabase/supabase-js'
 
-// import { createClient } from '@supabase/supabase-js'
-// export const supabase = createClient(
-//   import.meta.env.VITE_SUPABASE_URL,
-//   import.meta.env.VITE_SUPABASE_ANON_KEY
-// )
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error(
+    '[Supabase] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in .env.local. ' +
+      'Make sure you created frontend/.env.local and restarted the dev server.'
+  )
+}
+
+// export the client (will throw inside lib if keys are wrong, but message above helps)
+export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '')

@@ -1,12 +1,18 @@
 import React from 'react'
 
-function Header() {
+function Header({ isAuthenticated, onSignOut }) {
   return (
     <header className="app-header">
       <div className="app-logo">ZenTalk</div>
-      <button className="header-button" type="button">
-        Sign in
-      </button>
+      {isAuthenticated && (
+        <button
+          className="header-button signout-button"
+          type="button"
+          onClick={onSignOut}
+        >
+          Sign Out
+        </button>
+      )}
     </header>
   )
 }
