@@ -46,10 +46,10 @@ function App() {
 
   return (
     <div className="app-root">
-      <Header isAuthenticated={!!session} onSignOut={handleSignOut} />
+      <Header user={session.user} onSignOut={handleSignOut} />
       <main className="app-main">
         {inChat ? (
-          <Chat session={session} />
+          <Chat />
         ) : (
           <Welcome onGetStarted={() => setInChat(true)} />
         )}

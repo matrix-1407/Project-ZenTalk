@@ -1,72 +1,52 @@
-// backend/server.js
-const http = require('http');
-const express = require('express');
-const cors = require('cors');
-const { Server } = require('socket.io');
-// const { createClient } = require('@supabase/supabase-js') // TODO: initialize Supabase client when ready
+/* ZenTalk Backend Server 
+A simple chat server using Express and Socket.io 
+*/
 
-// Safe env-check: warn in dev, exit in production
-const requiredEnv = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
-const missing = requiredEnv.filter((key) => !process.env[key]);
+const http = require('http')
+const express = require('express')
+const cors = require('cors')
+const { Server } = require('socket.io')
 
-if (missing.length > 0) {
-  if (process.env.NODE_ENV === 'production') {
-    console.error(
-      `Missing required environment variables: ${missing.join(', ')}.\n` +
-        'Create a .env file based on .env.example and restart the server.'
-    );
-    process.exit(1);
-  } else {
-    console.warn(
-      `Warning: Missing environment variables: ${missing.join(', ')}.\n` +
-        'Starting in development mode without Supabase persistence. ' +
-        'When ready, set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY for persistence.'
-    );
-  }
-}
-
-const PORT = process.env.PORT || 5000;
-const app = express();
-
-app.use(
-  cors({
-    origin: '*', // TODO: restrict allowed origins in production
-  })
-);
-
-app.use(express.json());
-
-// TODO: initialize Supabase client with service role key for persistence
-
-app.get('/', (req, res) => {
-  res.type('text/plain').send('ZenTalk server running');
-});
-
-const server = http.createServer(app);
+const app = express()
+const server = http.createServer(app)
 
 const io = new Server(server, {
   cors: {
-    origin: '*', // TODO: restrict allowed origins in production
-    methods: ['GET', 'POST'],
+    origin: '*',
   },
-});
+})
 
-// TODO: verify Supabase access token during handshake and attach user info
+app.use(cors())
+app.use(express.json())
+
+app.get('/', (req, res) => {
+  res.send('ZenTalk server running')
+})
+
 io.on('connection', (socket) => {
-  console.log(`Client connected: ${socket.id}`);
+  console.log(`✅ Client connected: ${socket.id}`)
 
-  socket.emit('server:hello', { message: 'hello from ZenTalk server' });
+  socket.emit('server:hello', {
+    message: 'ZenTalk server connected',
+  })
 
   socket.on('message', (payload) => {
-    // TODO: persist to Supabase
-    io.emit('message', payload);
-  });
+    io.emit('message', {
+      user: payload.user || 'Guest',
+      text: payload.text,
+      time: new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+    })
+  })
 
   socket.on('disconnect', () => {
-    console.log(`Client disconnected: ${socket.id}`);
-  });
-});
+    console.log(`❌ Client disconnected: ${socket.id}`)
+  })
+})
 
+const PORT = process.env.PORT || 5000
 server.listen(PORT, () => {
-  console.log(`ZenTalk server listening on port ${PORT}`);
-});
+  console.log(`🚀 ZenTalk backend running on port ${PORT}`)
+})

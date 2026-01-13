@@ -1,17 +1,20 @@
-import React from 'react'
+import { supabase } from '../supabaseClient'
 
-function Header({ isAuthenticated, onSignOut }) {
+function Header({ user }) {
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    window.location.reload()
+  }
+
   return (
-    <header className="app-header">
-      <div className="app-logo">ZenTalk</div>
-      {isAuthenticated && (
-        <button
-          className="header-button signout-button"
-          type="button"
-          onClick={onSignOut}
-        >
-          Sign Out
-        </button>
+    <header className="header">
+      <h1>ZenTalk</h1>
+
+      {user && (
+        <div className="header-user">
+          <span className="user-email">{user.email}</span>
+          <button onClick={handleSignOut}>Sign Out</button>
+        </div>
       )}
     </header>
   )

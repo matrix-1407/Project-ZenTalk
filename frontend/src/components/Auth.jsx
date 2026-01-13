@@ -29,8 +29,12 @@ function Auth({ onAuthSuccess }) {
       } else if (!data.session) {
         setError('Please check your email to confirm your account, then sign in.')
       } else {
-        onAuthSuccess(data.session)
+        onAuthSuccess({
+        session: data.session,
+        user: data.user,
+        })
       }
+      
     } catch (err) {
       console.error('Auth submit error:', err)
       setError('Unexpected authentication error')
