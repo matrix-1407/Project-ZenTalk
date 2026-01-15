@@ -3,12 +3,14 @@ import Header from './components/Header'
 import Welcome from './components/Welcome'
 import Chat from './components/Chat'
 import Auth from './components/Auth'
+import History from './components/History'
 import { supabase } from './supabaseClient'
 
 function App() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
   const [inChat, setInChat] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -16,37 +18,29 @@ function App() {
       setLoading(false)
     })
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
+    const { data: { subscription } } =
+      supabase.auth.onAuthStateChange((_e, session) => {
+        setSession(session)
+      })
 
     return () => subscription.unsubscribe()
   }, [])
 
-  const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut()
-    } catch (error) {
-      console.error('Error during sign-out:', error)
-    } finally {
-      setSession(null)
-      setInChat(false)
-    }
-  }
-
-  if (loading) {
-    return <div className="loading-screen">Loading…</div>
-  }
-
-  if (!session) {
-    return <Auth onAuthSuccess={setSession} />
-  }
+  if (loading) return <div>Loading...</div>
+  if (!session) return <Auth onAuthSuccess={setSession} />
 
   return (
     <div className="app-root">
-      <Header user={session.user} onSignOut={handleSignOut} />
+      <Header user={session.user} />
+
+      <div style={{ padding: 12 }}>
+        <button onClick={() => setShowHistory(true)}>
+          View Chat History
+        </button>
+      </div>
+
+      {showHistory && <History onClose={() => setShowHistory(false)} />}
+
       <main className="app-main">
         {inChat ? (
           <Chat />
