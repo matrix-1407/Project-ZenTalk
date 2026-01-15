@@ -91,10 +91,13 @@ task2-zentalk/
 
 ## Output
 
-
+<img width="1057" height="800" alt="Image" src="https://github.com/user-attachments/assets/76d1e448-ca92-48b7-ac2e-d7cf4df79cb9" />
+<img width="1057" height="800" alt="Image" src="https://github.com/user-attachments/assets/faabb81c-5a03-420d-98fc-d86013eb07ac" />
+<img width="1057" height="850" alt="Image" src="https://github.com/user-attachments/assets/826e057f-4898-4560-adf2-4bf406ce2783" />
 
 ---
 
 ## License
 
 MIT
+
