@@ -7,7 +7,9 @@ function Auth({ onAuthSuccess }) {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [isSignup, setIsSignup] = useState(false)
+  const [mode, setMode] = useState('signin') // 'signin' | 'signup'
+
+  const isSignup = mode === 'signup'
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -16,6 +18,7 @@ function Auth({ onAuthSuccess }) {
 
     try {
       let result
+
       if (isSignup) {
         result = await supabase.auth.signUp({ email, password })
       } else {
@@ -27,17 +30,13 @@ function Auth({ onAuthSuccess }) {
       if (error) {
         setError(error.message)
       } else if (!data.session) {
-        setError('Please check your email to confirm your account, then sign in.')
+        setError('Check your email to confirm your account.')
       } else {
-        onAuthSuccess({
-        session: data.session,
-        user: data.user,
-        })
+        onAuthSuccess(data.session)
       }
-      
     } catch (err) {
-      console.error('Auth submit error:', err)
-      setError('Unexpected authentication error')
+      console.error(err)
+      setError('Authentication failed')
     } finally {
       setLoading(false)
     }
@@ -45,45 +44,46 @@ function Auth({ onAuthSuccess }) {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <h1 className="auth-app-name">ZenTalk</h1>
-        <h2 className="auth-title">{isSignup ? 'Create account' : 'Sign in to ZenTalk'}</h2>
+      <div className={`auth-card ${isSignup ? 'signup' : 'signin'}`}>
+        <p className="auth-app-name">ZENTALK</p>
 
-        {error && <p className="auth-error">{error}</p>}
+        <h2 className="auth-title">
+          {isSignup ? 'Create your account' : 'Sign in to ZenTalk'}
+        </h2>
+
+        {error && <div className="auth-error">{error}</div>}
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="auth-field">
-            <label className="auth-label" htmlFor="email">
-              Email
-            </label>
+            <label className="auth-label">Email</label>
             <input
-              id="email"
-              type="email"
               className="auth-input"
+              type="email"
               placeholder="you@example.com"
-              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
 
           <div className="auth-field">
-            <label className="auth-label" htmlFor="password">
-              Password
-            </label>
+            <label className="auth-label">Password</label>
             <input
-              id="password"
-              type="password"
               className="auth-input"
+              type="password"
               placeholder="Password (min 6 chars)"
-              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
 
           <button className="auth-button" type="submit" disabled={loading}>
-            {loading ? 'Please wait…' : isSignup ? 'Sign Up' : 'Sign In'}
+            {loading
+              ? 'Please wait…'
+              : isSignup
+              ? 'Create account'
+              : 'Sign In'}
           </button>
         </form>
 
@@ -93,11 +93,11 @@ function Auth({ onAuthSuccess }) {
             type="button"
             className="auth-toggle-button"
             onClick={() => {
-              setIsSignup(!isSignup)
+              setMode(isSignup ? 'signin' : 'signup')
               setError(null)
             }}
           >
-            {isSignup ? 'Sign In' : 'Sign Up'}
+            {isSignup ? 'Sign in' : 'Sign up'}
           </button>
         </p>
       </div>
